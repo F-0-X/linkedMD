@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta 
+        http-equiv="Content-Security-Policy" 
+        content="script-src 'self' 'unsafe-inline';"
+    />
+    <title>Markdown Editor</title>
+    <link rel="stylesheet" href="./node_modules/simplemde/dist/simplemde.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/github-markdown-css/2.2.1/github-markdown.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/highlight.js/9.1.0/styles/github.min.css">
+    
+    <style>
+        html,body{
+            height: 100%;
+            display:flex;
+            flex:1;
+            flex-direction:column;
+        }
+        .CodeMirror{
+            flex: 1;
+        }
+    </style>
+    <script src="./node_modules/simplemde/dist/simplemde.min.js"></script>
+    <script src="render.js"></script>
+</head>
+<body ondrop="dropHandler(event);">
+    <textarea id="editor"></textarea>
+    <script>
+
+
+        SimpleMDE.prototype.markdown = mymarkdown;
+
+        var editor = new SimpleMDE({
+            element: document.getElementById('editor')
+        });
+
+        const {ipcRenderer} = require('electron');
+
+        ipcRenderer.on('editor-event', (event, arg) => {
+            console.log(arg);
+            // send message back to main process
+            event.sender.send('editor-reply', 'Received ' + arg);
+            if(arg === 'toggle-bold'){
+                editor.toggleBold();
+            }
+            if(arg === 'save'){
+                console.log(editor.codemirror.getValue());
+                event.sender.send('save', editor.codemirror.getValue());
+            }
+        });
+
+        ipcRenderer.on('load', (event, content) =>{
+            if(content){
+                editor.value(content);
+            }
+        });
+        ipcRenderer.send('editor-reply', 'Page Loaded');
+    </script>
+</body>
+</html>

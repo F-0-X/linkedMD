@@ -1,0 +1,42 @@
+{
+  "name": "markdown-editor",
+  "version": "1.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "set DEBUG=true & electron .",
+    "build:macos": "electron-builder --macos --dir",
+    "dist:macos": "electron-builder --macos",
+    "build:linux": "electron-builder --linux --dir",
+    "dist:linux": "electron-builder --linux",
+    "build:windows": "electron-builder --win --dir",
+    "dist:windows": "electron-builder --win",
+    "publish": "electron-builder --win -p always"
+  },
+  "keywords": [],
+  "author": "Yu Xing",
+  "license": "ISC",
+  "build": {
+    "appId": "",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "F-0-X",
+        "repo": "linkedMD"
+      }
+    ]
+  },
+  "devDependencies": {
+    "electron": "^11.2.2",
+    "electron-builder": "^22.9.1"
+  },
+  "dependencies": {
+    "electron-updater": "^4.3.5",
+    "highlight.js": "^10.6.0",
+    "markdown-it": "^12.0.4",
+    "markdown-it-katex": "^2.0.3",
+    "markdown-it-mathjax": "^2.0.0",
+    "simplemde": "^1.11.2"
+  }
+}
