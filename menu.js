@@ -26,6 +26,8 @@ const template = [
     }
 ]
 
+var fileAddr = "";
+
 if(process.platform === 'win32'){
     template.unshift({
         label:app.getName(),
@@ -75,8 +77,10 @@ function loadFile(){
     dialog.showOpenDialog(window, options).then(result =>{
         if(!result.canceled && result.filePaths && result.filePaths.length > 0){
             try{
-                const content = fs.readFileSync(result.filePaths[0].toString(), 'utf8');
-                window.webContents.send('load', content);
+                fileAddr = result.filePaths[0].toString();
+                const content = fs.readFileSync(fileAddr, 'utf8');
+                window.webContents.send('load', content);      
+                window.webContents.send('fullpath', fileAddr);
             }catch(err){
                 console.error(err);
             }
@@ -106,30 +110,28 @@ ipcMain.on('save', (event, arg) => {
     console.log('Saving content of the file');
     console.log(arg);
 
-    const window = BrowserWindow.getFocusedWindow();
-    const options = {
-        title:'Save markdown file',
-        filters:[
-            {
-                name:'MyFile',
-                extensions:['md']
-            }
-        ]
-    }
-    let promise = dialog.showSaveDialog(window, options);
-    promise.then(file => {
-        if(!file.canceled){
-            console.log(file.filePath.toString());
-
-            fs.writeFileSync(file.filePath.toString(), arg);
+    if (fileAddr != ""){
+        fs.writeFileSync(fileAddr, arg);
+    }else{
+        const window = BrowserWindow.getFocusedWindow();
+        const options = {
+            title:'Save markdown file',
+            filters:[
+                {
+                    name:'MyFile',
+                    extensions:['md']
+                }
+            ]
         }
-    })
-    
-    // if (!promise.canceled){
-    //     let filePath = promise.filePath;
-    //     console.log('just get the filepath, trying to store to disk');
-    //     fs.writeFileSync(filePath, arg)
-    // }
+        let promise = dialog.showSaveDialog(window, options);
+        promise.then(file => {
+            if(!file.canceled){
+                console.log(file.filePath.toString());
+
+                fs.writeFileSync(file.filePath.toString(), arg);
+            }
+        })
+    }
 });
 
 const menu = Menu.buildFromTemplate(template);

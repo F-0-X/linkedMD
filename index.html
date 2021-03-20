@@ -7,7 +7,7 @@
         http-equiv="Content-Security-Policy" 
         content="script-src 'self' 'unsafe-inline';"
     />
-    <title>Markdown Editor</title>
+    <title>linkedMD</title>
     <link rel="stylesheet" href="./node_modules/simplemde/dist/simplemde.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/github-markdown-css/2.2.1/github-markdown.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
@@ -33,10 +33,18 @@
 
 
         SimpleMDE.prototype.markdown = mymarkdown;
+        SimpleMDE.prototype.createSideBySide = mysidebyside;
 
         var editor = new SimpleMDE({
-            element: document.getElementById('editor')
+            element: document.getElementById('editor'),
+            spellChecker: false
         });
+
+        var filename = "";
+        var bulletpoint = "•";
+        var appname = "linkedMD";
+        var fileaddr = "";
+
 
         const {ipcRenderer} = require('electron');
 
@@ -50,15 +58,30 @@
             if(arg === 'save'){
                 console.log(editor.codemirror.getValue());
                 event.sender.send('save', editor.codemirror.getValue());
+                editor.codemirror.getDoc().markClean();
+                updateTitle();
             }
         });
 
         ipcRenderer.on('load', (event, content) =>{
             if(content){
                 editor.value(content);
+                editor.codemirror.getDoc().markClean();
             }
         });
         ipcRenderer.send('editor-reply', 'Page Loaded');
+
+        document.addEventListener('keydown', function(event) {
+            updateTitle();
+        });
+
+        ipcRenderer.on('fullpath', (event, fullpath) => {
+            fileaddr = fullpath;
+            filename = fullpath.replace(/^.*[\\\/]/, '');
+            updateTitle();
+        })
+
+
     </script>
 </body>
 </html>

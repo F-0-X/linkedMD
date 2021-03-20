@@ -1,3 +1,28 @@
+// function updateToolBar(SimpleMDE){
+//     SimpleMDE.toolbarBuiltInButtons["scrollsync"] = {
+//         name = "scrollsync",
+//         className = "fa fa-sort-circle",
+//         title: "scrollsync",
+//         default: true
+//     }
+// }
+
+
+function mysidebyside(){
+    var cm = this.codemirror;
+	var wrapper = cm.getWrapperElement();
+	var preview = wrapper.nextSibling;
+
+	if(!preview || !/editor-preview-side/.test(preview.className)) {
+		preview = document.createElement("div");
+		preview.className = "editor-preview-side";
+		wrapper.parentNode.insertBefore(preview, wrapper.nextSibling);
+	}
+
+}
+
+
+
 function mymarkdown (text) {
 
     var hljs = require('highlight.js'); // https://highlightjs.org/
@@ -5,20 +30,21 @@ function mymarkdown (text) {
     // Actual default values
     var md = require('markdown-it')({
         highlight: function(str, lang) {
-        var esc = md.utils.escapeHtml;
+            var esc = md.utils.escapeHtml;
 
-        try {
-            if (lang && lang !== "auto" && hljs.getLanguage(lang)) {
-                return '<pre class="hljs language-' + esc(lang.toLowerCase()) + '"><code>' + hljs.highlight(lang, str, true).value + "</code></pre>";
-            } else if (lang === "auto") {
-                var result = hljs.highlightAuto(str);
-                /*eslint-disable no-console*/        
-                console.log("highlight language: " + result.language + ", relevance: " + result.relevance);
-                return '<pre class="hljs language-' + esc(result.language) + '"><code>' + result.value + "</code></pre>";
-            }
-        } catch (__) {}
-            return '<pre class="hljs"><code>' + esc(str) + "</code></pre>";
-        }
+            try {
+                if (lang && lang !== "auto" && hljs.getLanguage(lang)) {
+                    return '<pre class="hljs language-' + esc(lang.toLowerCase()) + '"><code>' + hljs.highlight(lang, str, true).value + "</code></pre>";
+                } else if (lang === "auto") {
+                    var result = hljs.highlightAuto(str);
+                    /*eslint-disable no-console*/        
+                    console.log("highlight language: " + result.language + ", relevance: " + result.relevance);
+                    return '<pre class="hljs language-' + esc(result.language) + '"><code>' + result.value + "</code></pre>";
+                }
+            } catch (__) {}
+                return '<pre class="hljs"><code>' + esc(str) + "</code></pre>";
+        },
+        html: true,
     });
     //var md = require('markdown-it')();
     var mk = require('markdown-it-katex');
@@ -53,5 +79,14 @@ function dropHandler(event){
                 reader.readAsText(file);
             }
         }
+    }
+}
+
+function updateTitle(){
+    var isClean = editor.codemirror.getDoc().isClean();
+    if(!isClean){
+        document.title = filename +  bulletpoint + " - " + appname;
+    }else{
+        document.title = filename + " - " + appname;
     }
 }
