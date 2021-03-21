@@ -13,7 +13,7 @@ function SimpleMDE_SUB(option){
 SimpleMDE_SUB.prototype = Object.create(SimpleMDE.prototype);
 SimpleMDE_SUB.prototype.constructor = SimpleMDE_SUB;
 SimpleMDE_SUB.prototype.markdown = mymarkdown;
-SimpleMDE_SUB.prototype.createSideBySide = mysidebyside;
+// SimpleMDE_SUB.prototype.createSideBySide = mysidebyside;
 
 
 
